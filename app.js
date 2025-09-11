@@ -50,7 +50,7 @@ app.post('/auth/register', async (req, res)=> {
     const user = new User({
         name,
         email,
-        senha,
+        senha : passsWordHash,
     })
 
     try{
@@ -67,10 +67,27 @@ app.post('/auth/register', async (req, res)=> {
         })
     }
 
-    // Se todas as validações passarem, envie uma resposta de sucesso
-    // Isso é temporário, apenas para você ver que funcionou.
-    return res.status(200).json({msg: 'Usuário validado com sucesso!'});
 });
+
+// Login User 
+app.post("authuser", async(req, res) =>{
+
+    const {email, senha} = req.body
+
+    //Validacoes 
+
+    if (!email) {
+        return res.status(422).json({msg: 'O email é obrigatório'});
+    }
+    if (!senha) {
+        return res.status(422).json({msg: 'A senha é obrigatória'});
+    }
+
+
+
+})
+
+
 
 //Credenciais
 const dbUser = process.env.DB_USER
