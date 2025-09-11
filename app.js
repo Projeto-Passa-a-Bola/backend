@@ -54,7 +54,10 @@ app.post('/auth/register', async (req, res)=> {
     })
 
     try{
-    }catch(error){
+
+        await user.save()
+        res.status(201).json({msg: "Usuario criado com sucesso!"})
+        }catch(error){
         console.log(error)
 
         res
