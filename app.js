@@ -70,7 +70,7 @@ app.post('/auth/register', async (req, res)=> {
 });
 
 // Login User 
-app.post("authuser", async(req, res) =>{
+app.post("/auth/login", async(req, res) =>{
 
     const {email, senha} = req.body
 
@@ -84,10 +84,20 @@ app.post("authuser", async(req, res) =>{
     }
 
 
+    // Verificando se o usuario existe
+    const user = await User.findOne({email: email})
 
+    if(!user){
+        return res.status(404).json({msg: "Usuario nao encontrado!"})
+    }
+
+    //Verificando se a senha corresponde
+    const verificaSenha = await bcrypt.compare(senha, user.senha)
+    
+    if(!verificaSenha){
+        return res.status(422).json({msg: "Senha invalida!"})
+    }
 })
-
-
 
 //Credenciais
 const dbUser = process.env.DB_USER
