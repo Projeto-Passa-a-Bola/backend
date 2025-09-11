@@ -53,6 +53,14 @@ app.post('/auth/register', async (req, res)=> {
         senha,
     })
 
+    try{
+        
+    }catch(error){
+        res.status(500)
+        .json
+        ({msg: 'Aconteceu um erro no servidor, tente novamente mais tarde!'})
+    }
+
     // Se todas as validações passarem, envie uma resposta de sucesso
     // Isso é temporário, apenas para você ver que funcionou.
     return res.status(200).json({msg: 'Usuário validado com sucesso!'});
