@@ -17,6 +17,39 @@ app.get('/', (req, res) => {
     res.status(200).json({msg: "Bem vindo ao Passa Bola"})
 })
 
+//Rota privada 
+app.get("/user/:id", checkToken, async(req, res)=> {
+    const id = req.params.id
+    //Verfica se o usuario existe
+    const user = await User.findById(id, "-senha") // -senha serve para nao mostrar a senha no metodo GET assim fica sem falhas de seguranca 
+
+    if(!user){
+        return res.status(404).json({msg:"Usuario nao encontrado"})
+    }
+    
+    res.status(200).json({ user })
+})
+
+function checkToken(req, res, next){
+
+    const authHeader = req.headers['authorization']
+    const token = authHeader && authHeader.split(" ")[1]
+
+    if(!token){
+        return res.status(401).json({msg : "Acesso negado"})
+    }
+    try{
+
+        const secret = process.env.SECRET
+        jwt.verify(token, secret)
+        next()
+        
+    }catch(error){
+        res.status(400).json({msg: "Token invalido"})
+    }
+
+}
+
 //registrando usuario 
 app.post('/auth/register', async (req, res)=> {
 
@@ -96,6 +129,25 @@ app.post("/auth/login", async(req, res) =>{
     
     if(!verificaSenha){
         return res.status(422).json({msg: "Senha invalida!"})
+    }
+
+    try{
+
+        const secret = process.env.SECRET
+
+        const token = jwt.sign({
+          id: user._id  
+        },
+        secret,
+    )
+
+        res.status(200).json({msg: "Autenticacao real com sucesso", token })
+    } catch(err){
+        console.log(error)
+
+        res.status(500).json({
+            msg: "Aconteceu um erro no servidor, tente novamente mais tarde!"
+        })
     }
 })
 
