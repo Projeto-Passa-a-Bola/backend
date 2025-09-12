@@ -1,6 +1,6 @@
 require('dotenv').config()
 const express = require('express')
-const mongooso = require('mongoose')
+const mongoose = require('mongoose')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
@@ -43,7 +43,7 @@ function checkToken(req, res, next){
         const secret = process.env.SECRET
         jwt.verify(token, secret)
         next()
-        
+
     }catch(error){
         res.status(400).json({msg: "Token invalido"})
     }
@@ -143,7 +143,7 @@ app.post("/auth/login", async(req, res) =>{
 
         res.status(200).json({msg: "Autenticacao real com sucesso", token })
     } catch(err){
-        console.log(error)
+        console.log(err)
 
         res.status(500).json({
             msg: "Aconteceu um erro no servidor, tente novamente mais tarde!"
@@ -155,7 +155,7 @@ app.post("/auth/login", async(req, res) =>{
 const dbUser = process.env.DB_USER
 const dbPassword = process.env.DB_PASS
 
-mongooso
+mongoose
     .connect(`mongodb+srv://${dbUser}:${dbPassword}@cluster0.wf7t7ee.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`)
     .then(()=>{
         app.listen(3000)
