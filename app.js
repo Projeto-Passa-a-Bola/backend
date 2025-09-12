@@ -1,6 +1,4 @@
-require('dotenv').config()
 const express = require('express')
-const mongoose = require('mongoose')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
@@ -10,7 +8,7 @@ const app = express()
 app.use(express.json());
 
 //importando models
-const User =require('./models/User')
+const User = require('./src/models/User')
 
 // Rota publica 
 app.get('/', (req, res) => {
@@ -18,7 +16,7 @@ app.get('/', (req, res) => {
 })
 
 //Rota privada 
-app.get("/user/:id", checkToken, async(req, res)=> {
+app.get("/user/:id", checkToken, async(req, res) => {
     const id = req.params.id
     //Verfica se o usuario existe
     const user = await User.findById(id, "-senha") // -senha serve para nao mostrar a senha no metodo GET assim fica sem falhas de seguranca 
@@ -31,7 +29,6 @@ app.get("/user/:id", checkToken, async(req, res)=> {
 })
 
 function checkToken(req, res, next){
-
     const authHeader = req.headers['authorization']
     const token = authHeader && authHeader.split(" ")[1]
 
@@ -39,23 +36,20 @@ function checkToken(req, res, next){
         return res.status(401).json({msg : "Acesso negado"})
     }
     try{
-
         const secret = process.env.SECRET
         jwt.verify(token, secret)
         next()
-
     }catch(error){
         res.status(400).json({msg: "Token invalido"})
     }
-
 }
 
 //registrando usuario 
-app.post('/auth/register', async (req, res)=> {
-
+app.post('/auth/register', async (req, res) => {
     const {name, email, senha, confirmasenha} = req.body
+    
     //VALIDACAO
-       // VALIDACAO - Verifique todos os campos
+    // VALIDACAO - Verifique todos os campos
     if (!name) {
         return res.status(422).json({msg: 'O nome é obrigatório'});
     }
@@ -69,12 +63,14 @@ app.post('/auth/register', async (req, res)=> {
     if (senha !== confirmasenha) {
         return res.status(422).json({msg: 'As senhas não conferem'});
     }
+    
     // Verificando se o usuario exists
     const userExistente = await User.findOne({email: email})
 
     if(userExistente){
         return res.status(422).json({msg: 'Por favor, ultilize outro e-mail!'})
     }
+    
     //Criando password 
     const salt = await bcrypt.genSalt(12)
     const passsWordHash = await bcrypt.hash(senha, salt)
@@ -87,10 +83,9 @@ app.post('/auth/register', async (req, res)=> {
     })
 
     try{
-
         await user.save()
         res.status(201).json({msg: "Usuario criado com sucesso!"})
-        }catch(error){
+    }catch(error){
         console.log(error)
 
         res
@@ -99,23 +94,19 @@ app.post('/auth/register', async (req, res)=> {
             msg: 'Aconteceu um erro no servidor, tente novamente mais tarde!',
         })
     }
-
 });
 
 // Login User 
-app.post("/auth/login", async(req, res) =>{
-
+app.post("/auth/login", async(req, res) => {
     const {email, senha} = req.body
 
     //Validacoes 
-
     if (!email) {
         return res.status(422).json({msg: 'O email é obrigatório'});
     }
     if (!senha) {
         return res.status(422).json({msg: 'A senha é obrigatória'});
     }
-
 
     // Verificando se o usuario existe
     const user = await User.findOne({email: email})
@@ -132,14 +123,13 @@ app.post("/auth/login", async(req, res) =>{
     }
 
     try{
-
         const secret = process.env.SECRET
 
         const token = jwt.sign({
           id: user._id  
         },
         secret,
-    )
+        )
 
         res.status(200).json({msg: "Autenticacao real com sucesso", token })
     } catch(err){
@@ -151,18 +141,5 @@ app.post("/auth/login", async(req, res) =>{
     }
 })
 
-//Credenciais
-const dbUser = process.env.DB_USER
-const dbPassword = process.env.DB_PASS
-
-mongoose
-    .connect(`mongodb+srv://${dbUser}:${dbPassword}@cluster0.wf7t7ee.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`)
-    .then(()=>{
-        app.listen(3000)
-        console.log("Conectou ao banco!")
-        console.log("")
-    })
-    .catch((err) => console.log(err))
-
-
-
+// Exporta o app para ser usado no server.js
+module.exports = app
