@@ -160,6 +160,7 @@ mongoose
     .then(()=>{
         app.listen(3000)
         console.log("Conectou ao banco!")
+        console.log("")
     })
     .catch((err) => console.log(err))
 
