@@ -142,6 +142,85 @@ app.post("/auth/login", async(req, res) => {
     }
 })
 
+//  Cadastro jogadoras
+app.post('/jogadora/register', async (req, res) => {
+    const {
+        name, 
+        lastName, 
+        nacionalidade,
+        cpf, 
+        senhaJogadora,
+        telefone,
+        dataNascimento,
+        posicao,
+    } = req.body
+
+    //validacoes 
+    if (!name) {
+        return res.status(422).json({msg: 'O nome é obrigatório'});
+    }
+    if (!lastName) {
+        return res.status(422).json({msg: 'O sobrenome é obrigatório'});
+    }
+    if (!nacionalidade) {
+        return res.status(422).json({msg: 'A nacionalidade é obrigatória'});
+    }
+    if (!cpf) {
+        return res.status(422).json({msg: 'O cpf é obrigatório'});
+    }
+    if (!senhaJogadora){
+        return res.status(422).json({msg: 'A senha é obrigatória'});
+    }
+    if (!telefone) {
+        return res.status(422).json({msg: 'O telefone é obrigatório'});
+    }
+    if (!dataNascimento) {
+        return res.status(422).json({msg: 'A data de nascimento é obrigatória'});
+    }
+    if (!posicao) {
+        return res.status(422).json({msg: 'A posição é obrigatória'});
+    }
+
+    try {
+        // Verificar se CPF já está cadastrado
+        const cpfExiste = await JogadoraCadastrada.findOne({cpf: cpf})
+        if (cpfExiste) {
+            return res.status(422).json({msg: 'Este CPF já está cadastrado!'})
+        }
+
+        // Verifica se aquele telefone ja foi cadastrado 
+        const telefoneExiste = await JogadoraCadastrada.findOne({telefone: telefone})
+        if (telefoneExiste) {
+            return res.status(422).json({msg: 'Este número de telefone já está em uso!'})
+        }
+
+        // Criando senha hash
+        const saltJogadora = await bcrypt.genSalt(12)
+        const passwordHashJogadora = await bcrypt.hash(senhaJogadora, saltJogadora)
+
+        //Criando jogadora
+        const jogadora = new JogadoraCadastrada({
+            name, 
+            lastName, 
+            nacionalidade,
+            cpf,
+            senhaJogadora: passwordHashJogadora,
+            telefone,
+            dataNascimento,
+            posicao,
+            aprovada:true
+        })
+
+        await jogadora.save()
+        res.status(201).json({msg:"Jogadora cadastrada com sucesso! "})
+        
+    } catch(error) {
+        console.log("Erro ao cadastrar jogadora:", error)
+        res.status(500).json({msg:"Aconteceu um erro no servidor, tente novamente mais tarde!"})
+    }
+})
+
+
 
 // Exporta o app para ser usado no server.js
 module.exports = app
