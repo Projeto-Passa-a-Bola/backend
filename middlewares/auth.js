@@ -45,3 +45,25 @@ function checkJogadoraToken(req, res, next) {
         res.status(400).json({ msg: "Token de jogadora inválido" })
     }
 }
+
+//Middleware para verificar se a jogadora está aprovada
+async function checkJogadoraAprovada(req, res, next) {
+    try {
+        const jogadora = await JogadoraCadastrada.findById(req.jogadoraId)
+        
+        if (!jogadora) {
+            return res.status(404).json({ msg: "Jogadora não encontrada" })
+        }
+        
+        if (!jogadora.aprovada) {
+            return res.status(403).json({ 
+                msg: "Sua conta ainda não foi aprovada pelos administradores" 
+            })
+        }
+        
+        req.jogadora = jogadora
+        next()
+    } catch (error) {
+        res.status(500).json({ msg: "Erro interno do servidor" })
+    }
+}
