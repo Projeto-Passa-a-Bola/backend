@@ -67,3 +67,31 @@ async function checkJogadoraAprovada(req, res, next) {
         res.status(500).json({ msg: "Erro interno do servidor" })
     }
 }
+// Middleware que aceita tanto user quanto jogadora (para rotas mistas)
+function checkAnyToken(req, res, next) {
+    const authHeader = req.headers['authorization']
+    const token = authHeader && authHeader.split(" ")[1]
+
+    if (!token) {
+        return res.status(401).json({ msg: "Acesso negado" })
+    }
+
+    try {
+        const secret = process.env.SECRET
+        const decoded = jwt.verify(token, secret)
+        
+        // Se for token de jogadora
+        if (decoded.type === 'jogadora') {
+            req.jogadoraId = decoded.id
+            req.userType = 'jogadora'
+        } else {
+            // Token de user comum
+            req.userId = decoded.id
+            req.userType = 'user'
+        }
+        
+        next()
+    } catch (error) {
+        res.status(400).json({ msg: "Token inválido" })
+    }
+}
