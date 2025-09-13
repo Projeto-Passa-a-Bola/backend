@@ -95,3 +95,11 @@ function checkAnyToken(req, res, next) {
         res.status(400).json({ msg: "Token inválido" })
     }
 }
+
+//exportando 
+module.exports = {
+    checkToken,
+    checkJogadoraToken,
+    checkJogadoraAprovada,
+    checkAnyToken
+}
