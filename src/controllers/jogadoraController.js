@@ -103,6 +103,19 @@ const loginJogadora = async (req, res) => {
     }
 };
 
+exports.buscarPorNome = async (req, res) => {
+    try {
+        const { nome } = req.query;
+        if (!nome) {
+            return res.status(400).json({ error: 'Nome é obrigatório na busca.' });
+        }
+        const jogadoras = await Jogadora.find({ nome: { $regex: nome, $options: 'i' } });
+        res.json(jogadoras);
+    } catch (err) {
+        res.status(500).json({ error: 'Erro ao buscar jogadoras.' });
+    }
+};
+
 // Listar jogadoras (Admin)
 const listarJogadoras = async (req, res) => {
     try {

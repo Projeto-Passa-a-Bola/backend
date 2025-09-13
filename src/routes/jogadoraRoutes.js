@@ -17,6 +17,7 @@ const router = express.Router();
 // Rotas públicas
 router.post('/register', validateJogadoraRegistration, registerJogadora);
 router.post('/login', validateJogadoraLogin, loginJogadora);
+router.get('/buscar', jogadoraController.buscarPorNome);
 
 // Rotas para Admin
 router.get('/listar', verificarToken, verificarAdmin, listarJogadoras);
