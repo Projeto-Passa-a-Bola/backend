@@ -8,7 +8,8 @@ const app = express()
 app.use(express.json());
 
 //importando models
-const User = require('./src/models/User')
+const User = require('./src/models/User');
+const JogadoraCadastrada = require('./src/models/JogadoraCadastrada');
 
 // Rota publica 
 app.get('/', (req, res) => {
@@ -64,7 +65,7 @@ app.post('/auth/register', async (req, res) => {
         return res.status(422).json({msg: 'As senhas não conferem'});
     }
     
-    // Verificando se o usuario exists
+    // Verificando se o usuario existe
     const userExistente = await User.findOne({email: email})
 
     if(userExistente){
@@ -140,6 +141,7 @@ app.post("/auth/login", async(req, res) => {
         })
     }
 })
+
 
 // Exporta o app para ser usado no server.js
 module.exports = app
