@@ -1,7 +1,8 @@
 const express = require('express');
-const routes = require('./src/routes');
+const routes = require('./src/routes/index');
 
 const app = express();
+
 
 // Middlewares globais
 app.use(express.json());
@@ -14,4 +15,4 @@ app.get('/', (req, res) => {
     res.status(200).json({ msg: "Bem vindo ao Passa Bola" });
 });
 
-module.exports = app;
+module.exports = app; 
