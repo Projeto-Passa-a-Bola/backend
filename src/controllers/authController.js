@@ -3,7 +3,7 @@ const User = require('../models/User');
 const { generateUserToken } = require('../services/tokenService');
 
 const registerUser = async (req, res) => {
-    const { name, email, senha } = req.body;
+    const { name, email, senha, isAdmin = false } = req.body;
     
     try {
         // Verificando se o usuário existe
@@ -22,10 +22,20 @@ const registerUser = async (req, res) => {
             name,
             email,
             senha: passwordHash,
+            isAdmin
         });
 
         await user.save();
-        res.status(201).json({ msg: "Usuário criado com sucesso!" });
+        
+        res.status(201).json({ 
+            msg: "Usuário criado com sucesso!",
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                isAdmin: user.isAdmin
+            }
+        });
         
     } catch (error) {
         console.log(error);
@@ -57,7 +67,13 @@ const loginUser = async (req, res) => {
         
         res.status(200).json({
             msg: "Autenticação realizada com sucesso",
-            token
+            token,
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                isAdmin: user.isAdmin
+            }
         });
         
     } catch (err) {
