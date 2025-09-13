@@ -37,7 +37,12 @@ const JogadoraCadastradaSchema = mongoose.Schema({
     },
     aprovada: {
         type: Boolean,
-        default: false
+        default: true
+    },
+    time: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Time',
+        default: null
     }
 }, {
     timestamps: true
