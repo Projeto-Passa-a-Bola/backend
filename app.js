@@ -141,8 +141,9 @@ app.post("/auth/login", async(req, res) => {
         })
     }
 })
+// ===== SISTEMA DE AUTENTICAÇÃO PARA JOGADORAS CADASTRADAS =====
 
-//  Cadastro jogadoras
+// ---------- Cadastro jogadoras --------------
 app.post('/jogadora/register', async (req, res) => {
     const {
         name, 
@@ -217,6 +218,69 @@ app.post('/jogadora/register', async (req, res) => {
     } catch(error) {
         console.log("Erro ao cadastrar jogadora:", error)
         res.status(500).json({msg:"Aconteceu um erro no servidor, tente novamente mais tarde!"})
+    }
+})
+
+// ----------login Jogadoras -----------------
+app.post("/jogadora/login", async(req, res) => {
+    const {cpf, senhaJogadora} = req.body
+
+    //validacao
+    if(!cpf){
+        return res.status(422).json({msg:"O cpf é obrigatório"})
+    }
+    if (!senhaJogadora){
+        return res.status(422).json({msg:"A senha é obrigatória"})
+    }
+    
+    try {
+        //Verifica se a jogadora existe
+        const jogadora = await JogadoraCadastrada.findOne({cpf: cpf})
+
+        if(!jogadora){
+            return res.status(404).json({msg: "Jogadora não encontrada"})
+        }
+
+        // Verificar senha
+        const verificaSenhaJogadora = await bcrypt.compare(senhaJogadora, jogadora.senhaJogadora)
+        
+        if(!verificaSenhaJogadora){
+            return res.status(422).json({msg: "Senha inválida!"})
+        }
+
+        const secret = process.env.JOGADORA_SECRET || process.env.SECRET
+
+        const token = jwt.sign({
+            id: jogadora._id,
+            type: 'jogadora' // Identificador do tipo de token
+        },
+        secret)
+
+        let mensagem = "Login de jogadora realizado com sucesso!"
+        if(!jogadora.aprovada){
+            mensagem += " Sua conta ainda não foi aprovada."
+        }
+
+        res.status(200).json({
+            msg: mensagem,
+            token,
+            jogadora: {
+                id: jogadora._id,
+                name: jogadora.name,
+                lastName: jogadora.lastName,
+                cpf: jogadora.cpf,
+                telefone: jogadora.telefone,
+                dataNascimento: jogadora.dataNascimento,
+                posicao: jogadora.posicao,
+                aprovada: jogadora.aprovada
+            }
+        })
+        
+    } catch (err) {
+        console.log("Erro no login da jogadora:", err)
+        res.status(500).json({
+            msg: "Aconteceu um erro no servidor, tente novamente mais tarde!"
+        })
     }
 })
 
