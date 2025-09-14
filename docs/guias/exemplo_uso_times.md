@@ -133,22 +133,22 @@ Authorization: Bearer <jogadora_token>
 }
 ```
 
-## 3. Buscar times por nome
+## 3. Buscar times por nome com paginação
 
 Para buscar times pelo nome (parcial ou completo), utilize:
 
-**Requisição:**
+Requisição:
 ```
-GET /api/times/buscar?nome=palmeiras
+GET /api/times/buscar?nome=palmeiras&limit=5&skip=0
 ```
 
-**Resposta:**
+Resposta:
 ```json
 [
   {
     "_id": "123abc",
     "nome": "Palmeiras Feminino",
-    "estado": "SP",
+    "estado": "SP"
     // outros campos...
   }
 ]
