@@ -104,7 +104,7 @@ const loginJogadora = async (req, res) => {
 };
 
 // Buscar jogadoras (Público)
-exports.buscarPorNome = async (req, res) => {
+const buscarPorNome = async (req, res) => {
     try {
         const { nome } = req.query;
         if (!nome) {
@@ -222,5 +222,6 @@ module.exports = {
     loginJogadora,
     listarJogadoras,
     aprovarJogadora,
-    reprovarJogadora
+    reprovarJogadora,
+    buscarPorNome
 };

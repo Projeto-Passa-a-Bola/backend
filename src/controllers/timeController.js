@@ -289,7 +289,7 @@ const verificarStatusJogadora = async (req, res) => {
 };
 
 // Buscar times por nome (público)
-exports.buscarPorNome = async (req, res) => {
+const buscarPorNome = async (req, res) => {
     try {
         const { nome } = req.query;
         if (!nome) {
@@ -371,5 +371,6 @@ module.exports = {
     entrarTimeAleatorio,
     verificarStatusJogadora,
     deletarTodosTimes,
-    obterEstatisticas
+    obterEstatisticas,
+    buscarPorNome
 };
