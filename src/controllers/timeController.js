@@ -288,6 +288,20 @@ const verificarStatusJogadora = async (req, res) => {
     }
 };
 
+// Buscar times por nome (público)
+exports.buscarPorNome = async (req, res) => {
+    try {
+        const { nome } = req.query;
+        if (!nome) {
+            return res.status(400).json({ error: 'Nome é obrigatório na busca.' });
+        }
+        const times = await Time.find({ nome: { $regex: nome, $options: 'i' } });
+        res.json(times);
+    } catch (err) {
+        res.status(500).json({ error: 'Erro ao buscar times.' });
+    }
+};
+
 // Deletar todos os times (Admin)
 const deletarTodosTimes = async (req, res) => {
     try {

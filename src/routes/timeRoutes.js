@@ -24,5 +24,6 @@ router.get('/buscar/:codigo', buscarTimePorCodigo);
 router.post('/entrar-codigo', verificarToken, verificarJogadora, entrarComCodigo);
 router.post('/entrar-aleatorio', verificarToken, verificarJogadora, entrarTimeAleatorio);
 router.get('/meu-status', verificarToken, verificarJogadora, verificarStatusJogadora);
+router.get('/buscar', timeController.buscarPorNome);
 
 module.exports = router;

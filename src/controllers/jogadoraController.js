@@ -103,6 +103,7 @@ const loginJogadora = async (req, res) => {
     }
 };
 
+// Buscar jogadoras (Público)
 exports.buscarPorNome = async (req, res) => {
     try {
         const { nome } = req.query;

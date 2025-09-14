@@ -133,15 +133,36 @@ Authorization: Bearer <jogadora_token>
 }
 ```
 
-### 3. Monitoramento (Admin)
+## 3. Buscar times por nome
 
-#### 3.1 Listar todos os times
+Para buscar times pelo nome (parcial ou completo), utilize:
+
+**Requisição:**
+```
+GET /api/times/buscar?nome=palmeiras
+```
+
+**Resposta:**
+```json
+[
+  {
+    "_id": "123abc",
+    "nome": "Palmeiras Feminino",
+    "estado": "SP",
+    // outros campos...
+  }
+]
+```
+
+### 4. Monitoramento (Admin)
+
+#### 4.1 Listar todos os times
 ```http
 GET http://localhost:3000/api/times/admin/listar
 Authorization: Bearer <admin_token>
 ```
 
-#### 3.2 Ver estatísticas
+#### 4.2 Ver estatísticas
 ```http
 GET http://localhost:3000/api/times/admin/estatisticas
 Authorization: Bearer <admin_token>
