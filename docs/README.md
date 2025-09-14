@@ -216,6 +216,8 @@ Você deve ver uma mensagem de sucesso ou erro de conexão com o banco.
 - ✅ Fazer login
 - ✅ Entrar em times
 - ✅ Visualizar informações do time
+- ✅ Busca de times por nome
+- ✅ Busca de jogadoras por nome
 
 ### 🏆 **Sistema de Times**
 
