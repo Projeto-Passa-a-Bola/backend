@@ -73,4 +73,4 @@ jspm_packages/
 
 # OS
 .DS_Store
-Thumbs.db
+Thumbs.db\n# Evitar arquivos reservados do Windows\nnul\n

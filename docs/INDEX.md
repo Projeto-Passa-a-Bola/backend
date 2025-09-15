@@ -249,3 +249,5 @@ Este projeto está sob a licença **MIT**. Veja o arquivo [LICENSE](../LICENSE) 
 *Última atualização: Setembro 2025*
 *Versão da documentação: 1.0.0*
 
+
+

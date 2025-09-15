@@ -4,7 +4,8 @@ const {
     loginJogadora, 
     listarJogadoras, 
     aprovarJogadora, 
-    reprovarJogadora 
+    reprovarJogadora,
+    buscarPorNome
 } = require('../controllers/jogadoraController');
 const { 
     validateJogadoraRegistration, 
@@ -17,7 +18,7 @@ const router = express.Router();
 // Rotas públicas
 router.post('/register', validateJogadoraRegistration, registerJogadora);
 router.post('/login', validateJogadoraLogin, loginJogadora);
-router.get('/buscar', jogadoraController.buscarPorNome);
+router.get('/buscar', buscarPorNome);
 
 // Rotas para Admin
 router.get('/listar', verificarToken, verificarAdmin, listarJogadoras);
