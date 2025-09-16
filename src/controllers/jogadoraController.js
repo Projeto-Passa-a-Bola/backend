@@ -12,7 +12,8 @@ const registerJogadora = async (req, res) => {
             telefone,
             dataNascimento,
             posicao,
-            userEmail
+            userEmail,
+            tecnico,
         } = req.body;
 
         // Verificar se CPF/telefone já existe
@@ -74,7 +75,8 @@ const registerJogadora = async (req, res) => {
                 lastName: jogadora.lastName,
                 cpf: jogadora.cpf,
                 telefone: jogadora.telefone,
-                posicao: jogadora.posicao
+                posicao: jogadora.posicao,
+                tecnico: jogadora.tecnico
             }
         });
     } catch (error) {
@@ -109,7 +111,7 @@ const loginJogadora = async (req, res) => {
                 cpf: jogadora.cpf,
                 telefone: jogadora.telefone,
                 posicao: jogadora.posicao,
-                aprovada: jogadora.aprovada
+                tecnico: jogadora.tecnico
             }
         });
     } catch (error) {
