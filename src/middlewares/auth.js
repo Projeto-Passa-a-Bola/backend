@@ -45,23 +45,6 @@ const checkJogadoraToken = (req, res, next) => {
     }
 };
 
-// Middleware para verificar se a jogadora está aprovada (agora sempre aprovada)
-const checkJogadoraAprovada = async (req, res, next) => {
-    try {
-        const jogadora = await JogadoraCadastrada.findById(req.jogadoraId);
-        
-        if (!jogadora) {
-            return res.status(404).json({ msg: "Jogadora não encontrada" });
-        }
-        
-        // Jogadora é aprovada automaticamente no registro
-        
-        req.jogadora = jogadora;
-        next();
-    } catch (error) {
-        res.status(500).json({ msg: "Erro interno do servidor" });
-    }
-};
 
 // Middleware que aceita tanto user quanto jogadora
 const checkAnyToken = (req, res, next) => {
@@ -143,19 +126,13 @@ const verificarToken = (req, res, next) => {
 // Middleware para verificar se é admin
 const verificarAdmin = async (req, res, next) => {
     try {
-        if (req.userType !== 'user') {
-            return res.status(403).json({ 
-                msg: "Acesso negado. Apenas administradores podem realizar esta ação." 
-            });
-        }
-
         const user = await User.findById(req.userId);
         
         if (!user) {
             return res.status(404).json({ msg: "Usuário não encontrado" });
         }
         
-        if (!user.isAdmin) {
+        if (user.userType !== 'admin' && !user.isAdmin) {
             return res.status(403).json({ 
                 msg: "Acesso negado. Apenas administradores podem realizar esta ação." 
             });
@@ -168,24 +145,30 @@ const verificarAdmin = async (req, res, next) => {
     }
 };
 
-// Middleware para verificar se é jogadora
+// Middleware para verificar se é jogadora (funciona com login unificado)
 const verificarJogadora = async (req, res, next) => {
     try {
-        if (req.userType !== 'jogadora') {
+        const user = await User.findById(req.userId);
+        
+        if (!user) {
+            return res.status(404).json({ msg: "Usuário não encontrado" });
+        }
+
+        // Verificar se tem perfil de jogadora
+        if (!user.jogadoraProfile) {
             return res.status(403).json({ 
-                msg: "Acesso negado. Apenas jogadoras podem realizar esta ação." 
+                msg: "Acesso negado. Você precisa ter perfil de jogadora." 
             });
         }
 
-        const jogadora = await JogadoraCadastrada.findById(req.jogadoraId);
-        
+        const jogadora = await JogadoraCadastrada.findById(user.jogadoraProfile);
         if (!jogadora) {
-            return res.status(404).json({ msg: "Jogadora não encontrada" });
+            return res.status(404).json({ msg: "Perfil de jogadora não encontrado" });
         }
-        
-        // Jogadora é aprovada automaticamente no registro
-        
+
+        req.jogadoraId = jogadora._id;
         req.jogadora = jogadora;
+        req.user = user;
         next();
     } catch (error) {
         res.status(500).json({ msg: "Erro interno do servidor" });
@@ -195,7 +178,6 @@ const verificarJogadora = async (req, res, next) => {
 module.exports = {
     checkToken,
     checkJogadoraToken,
-    checkJogadoraAprovada,
     checkAnyToken,
     checkAdmin,
     verificarToken,

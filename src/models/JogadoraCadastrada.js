@@ -35,10 +35,6 @@ const JogadoraCadastradaSchema = mongoose.Schema({
         type: String,
         required: true,
     },
-    aprovada: {
-        type: Boolean,
-        default: true
-    },
     time: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Time',

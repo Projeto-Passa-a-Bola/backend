@@ -1,8 +1,11 @@
 const jwt = require('jsonwebtoken');
 
-const generateUserToken = (userId) => {
+const generateUserToken = (userId, userType = 'user') => {
     const secret = process.env.SECRET;
-    return jwt.sign({ id: userId }, secret);
+    return jwt.sign({ 
+        id: userId, 
+        type: userType 
+    }, secret);
 };
 
 const generateJogadoraToken = (jogadoraId) => {

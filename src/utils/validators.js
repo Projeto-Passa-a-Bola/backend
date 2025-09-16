@@ -32,19 +32,16 @@ const validateUserLogin = (req, res, next) => {
 
 const validateJogadoraRegistration = (req, res, next) => {
     const {
-        name, lastName, nacionalidade, cpf, senhaJogadora,
-        telefone, dataNascimento, posicao
+        nacionalidade, cpf, telefone, dataNascimento, posicao, userEmail
     } = req.body;
 
     const requiredFields = {
-        name: 'O nome é obrigatório',
-        lastName: 'O sobrenome é obrigatório',
         nacionalidade: 'A nacionalidade é obrigatória',
         cpf: 'O cpf é obrigatório',
-        senhaJogadora: 'A senha é obrigatória',
         telefone: 'O telefone é obrigatório',
         dataNascimento: 'A data de nascimento é obrigatória',
-        posicao: 'A posição é obrigatória'
+        posicao: 'A posição é obrigatória',
+        userEmail: 'O email do usuário é obrigatório'
     };
 
     for (const [field, message] of Object.entries(requiredFields)) {
@@ -73,5 +70,5 @@ module.exports = {
     validateUserRegistration,
     validateUserLogin,
     validateJogadoraRegistration,
-    validateJogadoraLogin
+      validateJogadoraLogin
 };

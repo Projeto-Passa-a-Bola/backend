@@ -3,8 +3,6 @@ const {
     registerJogadora, 
     loginJogadora, 
     listarJogadoras, 
-    aprovarJogadora, 
-    reprovarJogadora,
     buscarPorNome
 } = require('../controllers/jogadoraController');
 const { 
@@ -22,7 +20,5 @@ router.get('/buscar', buscarPorNome);
 
 // Rotas para Admin
 router.get('/listar', verificarToken, verificarAdmin, listarJogadoras);
-router.put('/aprovar/:id', verificarToken, verificarAdmin, aprovarJogadora);
-router.put('/reprovar/:id', verificarToken, verificarAdmin, reprovarJogadora);
 
 module.exports = router;

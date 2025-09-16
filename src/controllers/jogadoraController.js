@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt');
+const User = require('../models/User');
 const JogadoraCadastrada = require('../models/JogadoraCadastrada');
 const { generateJogadoraToken } = require('../services/tokenService');
 
@@ -6,51 +7,68 @@ const { generateJogadoraToken } = require('../services/tokenService');
 const registerJogadora = async (req, res) => {
     try {
         const {
-            name,
-            lastName,
             nacionalidade,
             cpf,
-            senhaJogadora,
             telefone,
             dataNascimento,
-            posicao
+            posicao,
+            userEmail
         } = req.body;
 
+        // Verificar se CPF/telefone já existe
         const existente = await JogadoraCadastrada.findOne({ $or: [{ cpf }, { telefone }] });
         if (existente) {
             return res.status(422).json({ msg: 'CPF ou telefone já cadastrado' });
         }
 
-        const salt = await bcrypt.genSalt(12);
-        const senhaHash = await bcrypt.hash(senhaJogadora, salt);
+        // Buscar o usuário
+        const user = await User.findOne({ email: userEmail });
+        if (!user) {
+            return res.status(404).json({ 
+                msg: 'Usuário não encontrado. Faça primeiro o cadastro como usuário comum.' 
+            });
+        }
 
+        // Verificar se já tem perfil de jogadora
+        if (user.jogadoraProfile) {
+            return res.status(400).json({ 
+                msg: 'Este usuário já possui perfil de jogadora.' 
+            });
+        }
+
+        // Criar jogadora usando dados do usuário + dados específicos
         const jogadora = new JogadoraCadastrada({
-            name,
-            lastName,
-            nacionalidade,
-            cpf,
-            senhaJogadora: senhaHash,
-            telefone,
-            dataNascimento,
-            posicao,
-            aprovada: true
+            name: user.name.split(' ')[0],  // Primeiro nome do usuário
+            lastName: user.name.split(' ').slice(1).join(' ') || '',  // Resto do nome
+            nacionalidade, cpf, telefone, dataNascimento, posicao,
+            senhaJogadora: user.senha  // Usar a mesma senha do usuário
         });
-
         await jogadora.save();
+
+        // Vincular jogadora ao usuário
+        await User.findByIdAndUpdate(user._id, {
+            jogadoraProfile: jogadora._id,
+            userType: 'jogadora'
+        });
 
         const token = generateJogadoraToken(jogadora._id);
 
         return res.status(201).json({
-            msg: 'Jogadora cadastrada com sucesso',
+            msg: 'Perfil de jogadora criado e vinculado com sucesso!',
             token,
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                userType: 'jogadora'
+            },
             jogadora: {
                 id: jogadora._id,
                 name: jogadora.name,
                 lastName: jogadora.lastName,
                 cpf: jogadora.cpf,
                 telefone: jogadora.telefone,
-                posicao: jogadora.posicao,
-                aprovada: jogadora.aprovada
+                posicao: jogadora.posicao
             }
         });
     } catch (error) {
@@ -96,57 +114,13 @@ const loginJogadora = async (req, res) => {
 // Listar jogadoras (rota protegida para admin, middlewares já validam)
 const listarJogadoras = async (req, res) => {
     try {
-        const { aprovadas } = req.query; // opcional: filtrar por aprovação
-        const filtro = {};
-        if (aprovadas === 'true') filtro.aprovada = true;
-        if (aprovadas === 'false') filtro.aprovada = false;
-
-        const jogadoras = await JogadoraCadastrada.find(filtro).select('-senhaJogadora');
+        const jogadoras = await JogadoraCadastrada.find({}).select('-senhaJogadora');
         return res.status(200).json({ jogadoras });
     } catch (error) {
         return res.status(500).json({ msg: 'Erro interno do servidor' });
     }
 };
 
-// Aprovar jogadora (flag booleana)
-const aprovarJogadora = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const jogadora = await JogadoraCadastrada.findByIdAndUpdate(
-            id,
-            { aprovada: true },
-            { new: true }
-        ).select('-senhaJogadora');
-
-        if (!jogadora) {
-            return res.status(404).json({ msg: 'Jogadora não encontrada' });
-        }
-
-        return res.status(200).json({ msg: 'Jogadora aprovada', jogadora });
-    } catch (error) {
-        return res.status(500).json({ msg: 'Erro interno do servidor' });
-    }
-};
-
-// Reprovar jogadora (flag booleana)
-const reprovarJogadora = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const jogadora = await JogadoraCadastrada.findByIdAndUpdate(
-            id,
-            { aprovada: false },
-            { new: true }
-        ).select('-senhaJogadora');
-
-        if (!jogadora) {
-            return res.status(404).json({ msg: 'Jogadora não encontrada' });
-        }
-
-        return res.status(200).json({ msg: 'Jogadora reprovada', jogadora });
-    } catch (error) {
-        return res.status(500).json({ msg: 'Erro interno do servidor' });
-    }
-};
 
 // Buscar jogadoras por nome (name ou lastName)
 const buscarPorNome = async (req, res) => {
@@ -174,8 +148,6 @@ module.exports = {
     registerJogadora,
     loginJogadora,
     listarJogadoras,
-    aprovarJogadora,
-    reprovarJogadora,
     buscarPorNome
 };
 

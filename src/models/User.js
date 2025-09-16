@@ -17,6 +17,18 @@ const UserSchema = mongoose.Schema({
     isAdmin: {
         type: Boolean,
         default: false
+    },
+    // Tipo de usuário
+    userType: {
+        type: String,
+        enum: ['user', 'jogadora', 'admin'],
+        default: 'user'
+    },
+    // Referência para perfil de jogadora
+    jogadoraProfile: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'JogadoraCadastrada',
+        default: null
     }
 }, {
     timestamps: true

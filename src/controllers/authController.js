@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
 const User = require('../models/User');
+const JogadoraCadastrada = require('../models/JogadoraCadastrada');
 const { generateUserToken } = require('../services/tokenService');
 
 const registerUser = async (req, res) => {
@@ -84,7 +85,65 @@ const loginUser = async (req, res) => {
     }
 };
 
+// Login unificado - aceita email e senha, retorna dados do usuário e jogadora se existir
+const loginUnificado = async (req, res) => {
+    const { email, senha } = req.body;
+
+    try {
+        // Buscar usuário pelo email
+        const user = await User.findOne({ email: email });
+
+        if (!user) {
+            return res.status(404).json({ msg: "Usuário não encontrado!" });
+        }
+
+        // Verificar senha
+        const verificaSenha = await bcrypt.compare(senha, user.senha);
+        
+        if (!verificaSenha) {
+            return res.status(422).json({ msg: "Senha inválida!" });
+        }
+
+        // Buscar dados da jogadora se existir
+        let jogadoraData = null;
+        if (user.jogadoraProfile) {
+            jogadoraData = await JogadoraCadastrada.findById(user.jogadoraProfile)
+                .select('-senhaJogadora');
+        }
+
+        const token = generateUserToken(user._id, user.userType);
+        
+        res.status(200).json({
+            msg: "Autenticação realizada com sucesso",
+            token,
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                userType: user.userType,
+                isAdmin: user.isAdmin
+            },
+            jogadora: jogadoraData ? {
+                id: jogadoraData._id,
+                name: jogadoraData.name,
+                lastName: jogadoraData.lastName,
+                cpf: jogadoraData.cpf,
+                telefone: jogadoraData.telefone,
+                posicao: jogadoraData.posicao,
+                time: jogadoraData.time
+            } : null
+        });
+        
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({
+            msg: "Aconteceu um erro no servidor, tente novamente mais tarde!"
+        });
+    }
+};
+
 module.exports = {
     registerUser,
-    loginUser
+    loginUser,
+    loginUnificado
 };
