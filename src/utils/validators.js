@@ -49,6 +49,36 @@ const validateJogadoraRegistration = (req, res, next) => {
             return res.status(422).json({ msg: message });
         }
     }
+
+    // Validar posição
+    const posicoesValidas = ['Goleira', 'Zagueira', 'Lateral Direita', 'Lateral Esquerda', 'Volante', 'Meio-campo', 'Ponta Direita', 'Ponta Esquerda', 'Atacante', 'Centroavante'];
+    if (!posicoesValidas.includes(posicao)) {
+        return res.status(422).json({ 
+            msg: 'Posição inválida. Posições válidas: ' + posicoesValidas.join(', ')
+        });
+    }
+    
+    next();
+};
+
+const validateTecnicoRegistration = (req, res, next) => {
+    const {
+        nacionalidade, cpf, telefone, dataNascimento, userEmail
+    } = req.body;
+
+    const requiredFields = {
+        nacionalidade: 'A nacionalidade é obrigatória',
+        cpf: 'O cpf é obrigatório',
+        telefone: 'O telefone é obrigatório',
+        dataNascimento: 'A data de nascimento é obrigatória',
+        userEmail: 'O email do usuário é obrigatório'
+    };
+
+    for (const [field, message] of Object.entries(requiredFields)) {
+        if (!req.body[field]) {
+            return res.status(422).json({ msg: message });
+        }
+    }
     
     next();
 };
@@ -70,5 +100,6 @@ module.exports = {
     validateUserRegistration,
     validateUserLogin,
     validateJogadoraRegistration,
-      validateJogadoraLogin
+    validateTecnicoRegistration,
+    validateJogadoraLogin
 };

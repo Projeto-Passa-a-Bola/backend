@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const User = require('../models/User');
 const JogadoraCadastrada = require('../models/JogadoraCadastrada');
+const Tecnico = require('../models/Tecnico');
 const { generateUserToken } = require('../services/tokenService');
 
 const registerUser = async (req, res) => {
@@ -111,6 +112,12 @@ const loginUnificado = async (req, res) => {
                 .select('-senhaJogadora');
         }
 
+        // Buscar dados do técnico se existir
+        let tecnicoData = null;
+        if (user.tecnicoProfile) {
+            tecnicoData = await Tecnico.findById(user.tecnicoProfile);
+        }
+
         const token = generateUserToken(user._id, user.userType);
         
         res.status(200).json({
@@ -121,7 +128,9 @@ const loginUnificado = async (req, res) => {
                 name: user.name,
                 email: user.email,
                 userType: user.userType,
-                isAdmin: user.isAdmin
+                isAdmin: user.isAdmin,
+                isJogadora: !!user.jogadoraProfile,
+                isTecnico: !!user.tecnicoProfile
             },
             jogadora: jogadoraData ? {
                 id: jogadoraData._id,
@@ -131,6 +140,14 @@ const loginUnificado = async (req, res) => {
                 telefone: jogadoraData.telefone,
                 posicao: jogadoraData.posicao,
                 time: jogadoraData.time
+            } : null,
+            tecnico: tecnicoData ? {
+                id: tecnicoData._id,
+                name: tecnicoData.name,
+                lastName: tecnicoData.lastName,
+                cpf: tecnicoData.cpf,
+                telefone: tecnicoData.telefone,
+                time: tecnicoData.time
             } : null
         });
         

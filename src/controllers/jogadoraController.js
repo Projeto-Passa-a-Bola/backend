@@ -45,10 +45,16 @@ const registerJogadora = async (req, res) => {
         });
         await jogadora.save();
 
+        // Determinar o novo tipo de usuário
+        let novoUserType = 'jogadora';
+        if (user.tecnicoProfile) {
+            novoUserType = 'ambos';  // Se já tem perfil de técnico, vira 'ambos'
+        }
+
         // Vincular jogadora ao usuário
         await User.findByIdAndUpdate(user._id, {
             jogadoraProfile: jogadora._id,
-            userType: 'jogadora'
+            userType: novoUserType
         });
 
         const token = generateJogadoraToken(jogadora._id);
@@ -60,7 +66,7 @@ const registerJogadora = async (req, res) => {
                 id: user._id,
                 name: user.name,
                 email: user.email,
-                userType: 'jogadora'
+                userType: novoUserType
             },
             jogadora: {
                 id: jogadora._id,

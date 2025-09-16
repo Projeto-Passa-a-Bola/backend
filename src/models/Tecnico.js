@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const JogadoraCadastradaSchema = mongoose.Schema({
+const TecnicoSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
@@ -18,10 +18,6 @@ const JogadoraCadastradaSchema = mongoose.Schema({
         required: true,
         unique: true
     },
-    senhaJogadora: {
-        type: String,
-        required: true
-    },
     telefone: {
         type: String,
         required: true,
@@ -31,23 +27,15 @@ const JogadoraCadastradaSchema = mongoose.Schema({
         type: String,
         required: true,
     },
-    posicao: {
-        type: String,
-        required: true,
-    },
     time: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Time',
         default: null
-    },
-    tecnico:{
-        type:Boolean,
-        default:false
     }
 }, {
     timestamps: true
 });
 
-const JogadoraCadastrada = mongoose.model('JogadoraCadastrada', JogadoraCadastradaSchema);
+const Tecnico = mongoose.model('Tecnico', TecnicoSchema);
 
-module.exports = JogadoraCadastrada;
+module.exports = Tecnico;

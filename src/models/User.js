@@ -21,13 +21,19 @@ const UserSchema = mongoose.Schema({
     // Tipo de usuário
     userType: {
         type: String,
-        enum: ['user', 'jogadora', 'admin'],
+        enum: ['user', 'jogadora', 'tecnico', 'ambos', 'admin'],
         default: 'user'
     },
     // Referência para perfil de jogadora
     jogadoraProfile: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'JogadoraCadastrada',
+        default: null
+    },
+    // Referência para perfil de técnico
+    tecnicoProfile: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Tecnico',
         default: null
     }
 }, {
