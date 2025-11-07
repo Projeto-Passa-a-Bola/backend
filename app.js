@@ -1,38 +1,28 @@
-// app.js (CORREÇÃO FINAL DE CAMINHO COM MÓDULO PATH)
+// app.js (Revisão para garantir consistência)
 
 const express = require('express');
-const app = express();
 const cors = require('cors');
-// Importa o módulo 'path' nativo do Node
 const path = require('path');
+const app = express();
 
-// --- CORREÇÃO DO CAMINHO ---
-// 1. Usa path.join para construir caminhos absolutos baseados no diretório atual (__dirname)
-// 2. Isso resolve problemas de resolução de caminhos em diferentes ambientes/OS.
-const routes = require(path.join(__dirname, 'src', 'routes', 'index'));
-const authRoutes = require(path.join(__dirname, 'src', 'routes', 'authRoutes'));
-// --- FIM DA CORREÇÃO DE CAMINHO ---
-
-
-// --- VARIÁVEIS DE ORIGEM CORRIGIDAS ---
-const VERCEL_FRONTEND_URL = 'https://frontend-ten-opal-69.vercel.app';
+// Importa o ROTEADOR PRINCIPAL da API
+const apiRoutes = require(path.join(__dirname, 'src', 'routes', 'index'));
 
 // Middlewares globais
 app.use(express.json());
-
-// CONFIGURAÇÃO DE CORS
 app.use(cors({
-  origin: [VERCEL_FRONTEND_URL, 'http://localhost:5173', 'http://localhost:3000', 'http://127.0.0.1:5173'],
+  origin: [
+    'https://frontend-ten-opal-69.vercel.app',
+    'http://localhost:5173'
+  ],
   credentials: true,
-}));
+} ));
 
-// ROTA DE LOGIN E REGISTRO (Mapeamento Direto)
-app.use('/api/auth', authRoutes);
+// --- PONTO ÚNICO DE MONTAGEM DA API ---
+// Todas as rotas de 'src/routes/index.js' serão prefixadas com /api
+app.use('/api', apiRoutes);
 
-// OUTRAS ROTAS API
-app.use('/api', routes);
-
-// Rota de saúde da aplicação
+// Rota de saúde
 app.get('/', (req, res) => {
   res.status(200).json({ msg: "Servidor está vivo e respondendo!" });
 });
@@ -45,6 +35,5 @@ app.use((err, req, res, next) => {
     internalError: err.message
   });
 });
-
 
 module.exports = app;

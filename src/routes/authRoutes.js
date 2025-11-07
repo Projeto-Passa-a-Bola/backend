@@ -5,7 +5,7 @@ const { validateUserRegistration, validateUserLogin } = require('../utils/valida
 const router = express.Router();
 
 router.post('/register', validateUserRegistration, registerUser);
-// router.post('/login', validateUserLogin, loginUser);
+router.post('/login', validateUserLogin, loginUser);
 router.post('/login-unificado', validateUserLogin, loginUnificado);
 
 module.exports = router;

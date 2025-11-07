@@ -1,14 +1,21 @@
+// src/routes/index.js
+
 const express = require('express');
-// Remova: const authRoutes = require('./authRoutes'); 
+const router = express.Router();
+
+// --- CORREÇÃO: IMPORTE E USE AS ROTAS DE AUTENTICAÇÃO ---
+const authRoutes = require('./authRoutes'); // 1. Importe o authRoutes
 const userRoutes = require('./userRoutes');
 const jogadoraRoutes = require('./jogadoraRoutes');
 const tecnicoRoutes = require('./tecnicoRoutes');
 const timeRoutes = require('./timeRoutes');
 
-const router = express.Router();
+// 2. Monte o authRoutes com o prefixo '/auth'
+// Isso garantirá que as rotas /login e /register sejam encontradas
+router.use('/auth', authRoutes);
+// --- FIM DA CORREÇÃO ---
 
-// AQUI ESTÁ A MUDANÇA: APENAS AS ROTAS DE OUTRAS ENTIDADES.
-// ROTAS DE AUTH SAEM DAQUI!
+// As outras rotas permanecem como estão
 router.use('/users', userRoutes);
 router.use('/jogadoras', jogadoraRoutes);
 router.use('/tecnicos', tecnicoRoutes);
