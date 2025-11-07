@@ -1,13 +1,16 @@
-// app.js (FINAL COM CORREÇÃO DE CAMINHO)
+// app.js (CORREÇÃO FINAL DE CAMINHO COM MÓDULO PATH)
 
 const express = require('express');
 const app = express();
 const cors = require('cors');
+// Importa o módulo 'path' nativo do Node
+const path = require('path');
 
-// --- CORREÇÃO DO CAMINHO: Usando o caminho absoluto do projeto
-// Assumindo que app.js está na raiz e os arquivos estão em src/routes
-const routes = require('./src/routes/index');
-const authRoutes = require('./src/routes/authRoutes'); // <--- GARANTINDO O CAMINHO CORRETO
+// --- CORREÇÃO DO CAMINHO ---
+// 1. Usa path.join para construir caminhos absolutos baseados no diretório atual (__dirname)
+// 2. Isso resolve problemas de resolução de caminhos em diferentes ambientes/OS.
+const routes = require(path.join(__dirname, 'src', 'routes', 'index'));
+const authRoutes = require(path.join(__dirname, 'src', 'routes', 'authRoutes'));
 // --- FIM DA CORREÇÃO DE CAMINHO ---
 
 
@@ -31,7 +34,7 @@ app.use('/api', routes);
 
 // Rota de saúde da aplicação
 app.get('/', (req, res) => {
-  res.status(200).json({ msg: "Servidor está vivo!" });
+  res.status(200).json({ msg: "Servidor está vivo e respondendo!" });
 });
 
 // Manipulador de Erro Global
