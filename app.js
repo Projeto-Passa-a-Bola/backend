@@ -1,22 +1,19 @@
-// app.js (CORRIGIDO PARA CORS)
+// app.js (AJUSTADO PARA ACEITAR TODAS AS ORIGENS)
 
 const express = require('express');
 const routes = require('./src/routes/index');
 const app = express();
-const cors = require('cors');
-
-// --- VARIÁVEIS DE ORIGEM CORRIGIDAS ---
-const VERCEL_FRONTEND_URL = 'https://frontend-ten-opal-69.vercel.app';
+const cors = require('cors'); // Certifique-se de que 'cors' está instalado!
 
 // Middlewares globais
 app.use(express.json());
 
-// Permite requisições de múltiplos domínios (incluindo a Vercel, HTTPS)
+// CONFIGURAÇÃO DE CORS TEMPORÁRIA PARA DIAGNÓSTICO: Aceita TODAS as origens
 app.use(cors({
-  origin: [VERCEL_FRONTEND_URL, 'http://localhost:5173', 'http://localhost:3000', 'http://127.0.0.1:5173'],
-  credentials: true, // Adicionado credentials: true, caso use cookies ou sessões
+  origin: '*', // Permite qualquer domínio (HTTP/HTTPS) acessar a API
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Mantém os métodos
+  credentials: true,
 }));
-// --- FIM DA CORREÇÃO CORS ---
 
 // Rotas
 app.use('/api', routes);
