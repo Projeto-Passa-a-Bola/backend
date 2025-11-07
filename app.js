@@ -6,7 +6,7 @@ const app = express();
 const cors = require('cors');
 
 // --- VARIÁVEIS DE ORIGEM CORRIGIDAS ---
-const VERCEL_FRONTEND_URL = 'https://frontend-ten-opal-69.vercel.app/';
+const VERCEL_FRONTEND_URL = 'https://frontend-ten-opal-69.vercel.app';
 
 // Middlewares globais
 app.use(express.json());
